@@ -5,6 +5,7 @@ import {GestureController} from "@ionic/angular";
 import {Haptics, ImpactStyle} from "@capacitor/haptics";
 import {OpenAiService} from "../services/open-ai.service";
 import {MurfService} from "../services/murf.service";
+import {ServerService} from "../services/server.service";
 
 @Component({
   selector: 'app-tab1',
@@ -24,11 +25,8 @@ export class Tab1Page implements OnInit, AfterViewInit{
     private gestureCtrl: GestureController,
     private openAiService: OpenAiService,
     private murfService: MurfService,
-  ) {
-    // this.murfService.login()
-    this.murfService.voices()
-
-  }
+    private serverService: ServerService,
+  ) {}
 
   ngAfterViewInit(): void {
         const longpress = this.gestureCtrl.create({
@@ -50,7 +48,7 @@ export class Tab1Page implements OnInit, AfterViewInit{
 
   ngOnInit() {
     this.loadFiles()
-
+    this.serverService.checkAlive()
     VoiceRecorder.requestAudioRecordingPermission();
   }
 
@@ -91,6 +89,7 @@ export class Tab1Page implements OnInit, AfterViewInit{
           directory: Directory.Data,
           data: recordData
         })
+        this.serverService.sendAudio(recordData);
         this.loadFiles();
       }
     })
@@ -102,7 +101,6 @@ export class Tab1Page implements OnInit, AfterViewInit{
         directory: Directory.Data
       })
       console.log('audioFile', audioFile)
-      this.openAiService.sendAudio('sendAudio')
       const base64Sound = audioFile.data
       //   TODO UPLOAD
 
